@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Joka · Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar" id="topbar"></div>
+    <div class="page-content">
+
+      <!-- tab bar -->
+      <div style="display:flex;gap:4px;margin-bottom:24px;background:var(--surface);border-radius:10px;padding:4px;width:fit-content;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" id="tb-revenue" onclick="tab('revenue')">📊 Revenue</button>
+        <button class="btn btn-ghost   btn-sm" id="tb-users"   onclick="tab('users')">👥 Users</button>
+        <button class="btn btn-ghost   btn-sm" id="tb-menu"    onclick="tab('menu')">🍽 Menu</button>
+        <button class="btn btn-ghost   btn-sm" id="tb-orders"  onclick="tab('orders')">📋 Orders</button>
+        <button class="btn btn-ghost   btn-sm" id="tb-audit"   onclick="tab('audit')">🔍 Audit</button>
+        <button class="btn btn-ghost   btn-sm" id="tb-export"  onclick="tab('export')">⬇️ Export</button>
+      </div>
+
+      <!-- REVENUE -->
+      <div id="pn-revenue">
+        <div class="stats-grid">
+          <div class="stat-card">        <div class="label" data-i18n="weekly">ሳምንታዊ</div>  <div class="value" id="rW">—</div><div class="sub">ETB</div></div>
+          <div class="stat-card green">  <div class="label" data-i18n="monthly">ወርሃዊ</div>  <div class="value" id="rM">—</div><div class="sub">ETB</div></div>
+          <div class="stat-card yellow"> <div class="label" data-i18n="yearly">ዓመታዊ</div>  <div class="value" id="rY">—</div><div class="sub">ETB</div></div>
+          <div class="stat-card">        <div class="label" data-i18n="totalRevenue">ጠቅላላ</div><div class="value" id="rT">—</div><div class="sub">ETB</div></div>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <h3 data-i18n="cashierPerformance">የካሸር አፈጻጸም</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th data-i18n="name">ስም</th><th data-i18n="orders">ትዕዛዞች</th><th data-i18n="total">ጠቅላላ</th></tr></thead>
+            <tbody id="cashTbl"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="pn-users" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h3 data-i18n="manageUsers">ተጠቃሚዎች</h3>
+          <button class="btn btn-primary" onclick="openModal('addUserModal')" data-i18n="addUser">ተጠቃሚ ጨምር</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th data-i18n="name">ስም</th><th data-i18n="username">ተጠቃሚ ስም</th><th data-i18n="role">ሚና</th><th></th></tr></thead>
+          <tbody id="usersTbl"></tbody>
+        </table></div>
+      </div>
+
+      <!-- MENU -->
+      <div id="pn-menu" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h3 data-i18n="menuManagement">ምናሌ</h3>
+          <button class="btn btn-primary" onclick="openModal('addMenuModal')" data-i18n="addMenuItem">ዕቃ ጨምር</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th data-i18n="name">ስም</th><th>አማርኛ</th><th data-i18n="price">ዋጋ</th><th data-i18n="category">ምድብ</th><th></th></tr></thead>
+          <tbody id="menuTbl"></tbody>
+        </table></div>
+      </div>
+
+      <!-- ORDERS -->
+      <div id="pn-orders" style="display:none">
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <input class="form-control" type="date" id="oDate" style="max-width:180px" onchange="loadOrders()">
+          <select class="form-control" id="oStatus" style="max-width:160px" onchange="loadOrders()">
+            <option value="">All</option><option value="pending">Pending</option><option value="completed">Completed</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="loadOrders()">🔄</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>ID</th><th data-i18n="cashier">ካሸር</th><th data-i18n="table">ጠረጴዛ</th><th data-i18n="amount">ዋጋ</th><th data-i18n="status">ሁኔታ</th><th data-i18n="date">ቀን</th><th></th></tr></thead>
+          <tbody id="ordersTbl"></tbody>
+        </table></div>
+      </div>
+
+      <!-- AUDIT -->
+      <div id="pn-audit" style="display:none">
+        <div class="card">
+          <h3 data-i18n="auditLog">ኦዲት</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th data-i18n="date">ቀን</th><th data-i18n="username">ተጠቃሚ</th><th>Action</th><th>Detail</th></tr></thead>
+            <tbody id="auditTbl"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- EXPORT -->
+      <div id="pn-export" style="display:none">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+          <div class="card" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:12px">📊</div>
+            <h3>Excel</h3><p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px">Orders + Inventory + Users</p>
+            <button class="btn btn-success btn-full" onclick="doExport('excel')" data-i18n="exportExcel">ኤክሴል አውርድ</button>
+          </div>
+          <div class="card" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:12px">📄</div>
+            <h3>CSV</h3><p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px">Orders only</p>
+            <button class="btn btn-primary btn-full" onclick="doExport('csv')" data-i18n="exportCSV">CSV አውርድ</button>
+          </div>
+          <div class="card" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:12px">🗂</div>
+            <h3>JSON</h3><p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px">Full backup</p>
+            <button class="btn btn-warn btn-full" onclick="doExport('json')" data-i18n="exportJSON">JSON አውርድ</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- add user modal -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <div class="modal-header"><h3 data-i18n="addUser">ተጠቃሚ ጨምር</h3><button class="modal-close" onclick="closeModal('addUserModal')">✕</button></div>
+    <div class="form-group"><label data-i18n="name">ሙሉ ስም</label><input class="form-control" id="uN" placeholder="Full name"></div>
+    <div class="form-group"><label data-i18n="username">ተጠቃሚ ስም</label><input class="form-control" id="uU" placeholder="username"></div>
+    <div class="form-group"><label data-i18n="password">የይለፍ ቃል</label><input class="form-control" id="uP" type="password" placeholder="Min 6 chars"></div>
+    <div class="form-group"><label data-i18n="role">ሚና</label>
+      <select class="form-control" id="uR"><option value="cashier">Cashier</option><option value="kitchen">Kitchen</option><option value="chef">Chef</option><option value="admin">Admin</option></select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('addUserModal')" data-i18n="cancel">ሰርዝ</button>
+      <button class="btn btn-primary btn-full" onclick="addUser()" data-i18n="save">አስቀምጥ</button>
+    </div>
+  </div>
+</div>
+
+<!-- add menu modal -->
+<div class="modal-overlay" id="addMenuModal">
+  <div class="modal">
+    <div class="modal-header"><h3 data-i18n="addMenuItem">ዕቃ ጨምር</h3><button class="modal-close" onclick="closeModal('addMenuModal')">✕</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Name (EN)</label><input class="form-control" id="mN" placeholder="Item name"></div>
+      <div class="form-group"><label>ስም (አማ)</label><input class="form-control" id="mA" placeholder="የዕቃ ስም"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label data-i18n="price">ዋጋ (ETB)</label><input class="form-control" id="mP" type="number" min="0" placeholder="0"></div>
+      <div class="form-group"><label data-i18n="category">ምድብ</label>
+        <select class="form-control" id="mC"><option value="Food">Food</option><option value="Bar">Bar</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Description</label><input class="form-control" id="mD" placeholder="Short description"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('addMenuModal')" data-i18n="cancel">ሰርዝ</button>
+      <button class="btn btn-primary btn-full" onclick="addMenuItem()" data-i18n="save">አስቀምጥ</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+Auth.require(['admin']);
+buildSidebar('admin');
+buildTopbar('admin');
+
+const TABS = ['revenue','users','menu','orders','audit','export'];
+
+function tab(name) {
+  TABS.forEach(n => {
+    document.getElementById('pn-'+n).style.display = n===name ? 'block' : 'none';
+    const b = document.getElementById('tb-'+n);
+    b.className = n===name ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  });
+  if (name==='revenue') loadRevenue();
+  if (name==='users')   loadUsers();
+  if (name==='menu')    loadMenu();
+  if (name==='orders')  loadOrders();
+  if (name==='audit')   loadAudit();
+}
+
+async function loadRevenue() {
+  const r1 = await api('GET','/api/reports/revenue'); if (!r1) return;
+  const d  = await r1.json();
+  document.getElementById('rW').textContent = d.weekly.toLocaleString();
+  document.getElementById('rM').textContent = d.monthly.toLocaleString();
+  document.getElementById('rY').textContent = d.yearly.toLocaleString();
+  document.getElementById('rT').textContent = d.total.toLocaleString();
+  const r2 = await api('GET','/api/reports/cashiers'); if (!r2) return;
+  const cs = await r2.json();
+  document.getElementById('cashTbl').innerHTML = cs.length
+    ? cs.map(c=>`<tr><td>${c.name}</td><td><span class="badge badge-blue">${c.count}</span></td><td style="color:var(--accent2);font-weight:600">${c.total.toLocaleString()} ETB</td></tr>`).join('')
+    : `<tr><td colspan="3" style="text-align:center;color:var(--text-dim)">${t('noData')}</td></tr>`;
+}
+
+async function loadUsers() {
+  const res = await api('GET','/api/users'); if (!res) return;
+  const us  = await res.json();
+  const me  = Auth.user();
+  document.getElementById('usersTbl').innerHTML = us.map(u=>`
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.username}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-red':u.role==='cashier'?'badge-blue':'badge-green'}">${u.role}</span></td>
+      <td>${u.username!==me?.username?`<button class="btn btn-danger btn-sm" onclick="delUser('${u.id}')">🗑</button>`:'<span style="color:var(--text-dim);font-size:.75rem">You</span>'}</td>
+    </tr>`).join('');
+}
+
+async function loadMenu() {
+  const res = await fetch('/api/menu');
+  const items = await res.json();
+  document.getElementById('menuTbl').innerHTML = items.map(i=>`
+    <tr>
+      <td><strong>${i.name}</strong></td>
+      <td style="color:var(--text-muted)">${i.amharicName||'—'}</td>
+      <td style="color:var(--accent2);font-weight:600">${i.price} ETB</td>
+      <td><span class="badge ${i.category==='Food'?'badge-yellow':'badge-blue'}">${i.category}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delMenuItem('${i.id}')">🗑</button></td>
+    </tr>`).join('');
+}
+
+async function loadOrders() {
+  let url = '/api/orders?';
+  const d = document.getElementById('oDate').value;
+  const s = document.getElementById('oStatus').value;
+  if (d) url += 'date='+d+'&';
+  if (s) url += 'status='+s;
+  const res = await api('GET', url); if (!res) return;
+  const orders = await res.json();
+  document.getElementById('ordersTbl').innerHTML = orders.length
+    ? orders.map(o=>`
+        <tr>
+          <td style="font-size:.75rem;color:var(--text-dim)">#${o.id.slice(-6).toUpperCase()}</td>
+          <td>${o.cashierName||o.cashier}</td>
+          <td>${o.tableNumber||'—'}</td>
+          <td style="font-weight:600;color:var(--accent2)">${o.total.toLocaleString()} ETB</td>
+          <td><span class="badge ${o.status==='completed'?'badge-green':'badge-yellow'}">${o.status}</span></td>
+          <td style="font-size:.78rem;color:var(--text-muted)">${new Date(o.createdAt).toLocaleString()}</td>
+          <td>${o.status==='pending'?`<button class="btn btn-success btn-sm" onclick="completeOrder('${o.id}')">✅</button>`:''}</td>
+        </tr>`).join('')
+    : `<tr><td colspan="7" style="text-align:center;color:var(--text-dim)">${t('noData')}</td></tr>`;
+}
+
+async function loadAudit() {
+  const res = await api('GET','/api/audit'); if (!res) return;
+  const logs = await res.json();
+  document.getElementById('auditTbl').innerHTML = logs.map(a=>`
+    <tr>
+      <td style="font-size:.78rem;color:var(--text-muted)">${new Date(a.ts).toLocaleString()}</td>
+      <td style="color:var(--accent)">${a.user}</td>
+      <td><span class="badge badge-blue">${a.action}</span></td>
+      <td style="color:var(--text-muted);font-size:.82rem">${a.detail||''}</td>
+    </tr>`).join('');
+}
+
+async function addUser() {
+  const body = { name:document.getElementById('uN').value.trim(), username:document.getElementById('uU').value.trim(), password:document.getElementById('uP').value, role:document.getElementById('uR').value };
+  if (!body.name||!body.username||!body.password) { toast('Fill all fields','error'); return; }
+  const res = await api('POST','/api/users',body); if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast(t('userCreated'),'success'); closeModal('addUserModal'); loadUsers(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+async function delUser(id) {
+  if (!confirm(t('confirmDelete'))) return;
+  const res = await api('DELETE',`/api/users/${id}`); if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast(t('userDeleted'),'success'); loadUsers(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+async function addMenuItem() {
+  const body = { name:document.getElementById('mN').value.trim(), amharicName:document.getElementById('mA').value.trim(), price:+document.getElementById('mP').value, category:document.getElementById('mC').value, description:document.getElementById('mD').value.trim() };
+  if (!body.name||!body.price) { toast('Fill required fields','error'); return; }
+  const res = await api('POST','/api/menu',body); if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast(t('menuItemAdded'),'success'); closeModal('addMenuModal'); loadMenu(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+async function delMenuItem(id) {
+  if (!confirm(t('confirmDelete'))) return;
+  const res = await api('DELETE',`/api/menu/${id}`); if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast('Deleted','success'); loadMenu(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+async function completeOrder(id) {
+  const res = await api('PATCH',`/api/orders/${id}/complete`); if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast(t('orderCompleted'),'success'); loadOrders(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+async function doExport(type) {
+  const res = await api('GET',`/api/export/${type}`); if (!res) return;
+  const blob = await res.blob();
+  const ext  = type==='excel'?'xlsx':type;
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `joka_${type}_${Date.now()}.${ext}`;
+  a.click();
+  toast('Download started','success');
+}
+
+loadRevenue();
+</script>
+</body>
+</html>

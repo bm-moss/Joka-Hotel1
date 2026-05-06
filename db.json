@@ -1,0 +1,848 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "username": "admin",
+      "role": "admin",
+      "name": "Admin User",
+      "password": "$2b$10$KUYITgNVvqeB3OgIXX9H/uJ.iQbsqHNJ2gVqKrXxMJ88OdVTGdZzG"
+    },
+    {
+      "id": "u2",
+      "username": "cashier1",
+      "role": "cashier",
+      "name": "Cashier One",
+      "password": "$2b$10$gjSl/R4HwmRQBynxPJqWMOYm8ayQtQECpNHw8kdS6an8xz.q5tOX2"
+    },
+    {
+      "id": "u3",
+      "username": "kitchen1",
+      "role": "kitchen",
+      "name": "Kitchen Staff",
+      "password": "$2b$10$aSx3/820wNc5gFcCRe1LDuzd/ZSCZgCTy3/VcBxEI8cGMUlHKBHka"
+    },
+    {
+      "id": "u4",
+      "username": "chef1",
+      "role": "chef",
+      "name": "Head Chef",
+      "password": "$2b$10$1SouObeL6rBqMlUli7HJWO5z88a4tPnlBoW1M9Ki/EVQ2aAZ3dJKy"
+    },
+    {
+      "id": "mou64vd49b10",
+      "username": "service1",
+      "role": "cashier",
+      "name": "ተላላኪ",
+      "password": "$2b$10$wE7zOPHPVSGEw/w27pmNc.zUkw60sY5zh55ABC2UglDSE2alt3F1K"
+    }
+  ],
+  "orders": [
+    {
+      "id": "mou4iqh5mzrm",
+      "items": [
+        {
+          "menuId": "m1",
+          "name": "Tibs",
+          "amharicName": "ጥብስ",
+          "price": 180,
+          "qty": 2,
+          "category": "Food"
+        },
+        {
+          "menuId": "m7",
+          "name": "Soft Drink",
+          "amharicName": "ለስላሳ",
+          "price": 35,
+          "qty": 1,
+          "category": "Bar"
+        }
+      ],
+      "total": 395,
+      "tableNumber": 3,
+      "note": "test order",
+      "cashier": "cashier1",
+      "cashierName": "Cashier One",
+      "status": "completed",
+      "kitchenStatus": "ready",
+      "createdAt": "2026-05-06T13:59:24.041Z",
+      "completedAt": "2026-05-06T13:59:24.249Z"
+    },
+    {
+      "id": "mou4iqhqy8ig",
+      "items": [
+        {
+          "menuId": "m2",
+          "name": "Injera with Wot",
+          "amharicName": "እንጀራ ከወጥ",
+          "price": 120,
+          "qty": 1,
+          "category": "Food"
+        }
+      ],
+      "total": 120,
+      "tableNumber": 5,
+      "note": "no spice",
+      "cashier": "guest",
+      "cashierName": "Abebe",
+      "status": "pending",
+      "kitchenStatus": "ready",
+      "createdAt": "2026-05-06T13:59:24.062Z",
+      "completedAt": null,
+      "isGuest": true
+    },
+    {
+      "id": "mou4v44m5xir",
+      "items": [
+        {
+          "menuId": "m1",
+          "name": "Tibs",
+          "amharicName": "ጥብስ",
+          "price": 180,
+          "qty": 1,
+          "category": "Food"
+        }
+      ],
+      "total": 180,
+      "tableNumber": 2,
+      "note": "test",
+      "cashier": "cashier1",
+      "cashierName": "Cashier One",
+      "status": "pending",
+      "kitchenStatus": "ready",
+      "createdAt": "2026-05-06T14:09:01.606Z",
+      "completedAt": null
+    },
+    {
+      "id": "mou4v46lyd2c",
+      "items": [
+        {
+          "menuId": "m1",
+          "name": "Tibs",
+          "amharicName": "ጥብስ",
+          "price": 180,
+          "qty": 1,
+          "category": "Food"
+        },
+        {
+          "menuId": "m7",
+          "name": "Soft Drink",
+          "amharicName": "ለስላሳ",
+          "price": 35,
+          "qty": 2,
+          "category": "Bar"
+        }
+      ],
+      "total": 250,
+      "tableNumber": 4,
+      "note": "extra sauce",
+      "cashier": "guest",
+      "cashierName": "Tigist",
+      "status": "completed",
+      "kitchenStatus": "ready",
+      "createdAt": "2026-05-06T14:09:01.677Z",
+      "completedAt": "2026-05-06T14:09:03.237Z",
+      "isGuest": true
+    },
+    {
+      "id": "mou5f9u9j8vb",
+      "items": [
+        {
+          "menuId": "m5",
+          "name": "Shiro",
+          "amharicName": "ሽሮ",
+          "price": 90,
+          "qty": 1,
+          "category": "Food"
+        },
+        {
+          "menuId": "m6",
+          "name": "Firfir",
+          "amharicName": "ፍርፍር",
+          "price": 100,
+          "qty": 1,
+          "category": "Food"
+        },
+        {
+          "menuId": "m7",
+          "name": "Soft Drink",
+          "amharicName": "ለስላሳ",
+          "price": 35,
+          "qty": 1,
+          "category": "Bar"
+        }
+      ],
+      "total": 225,
+      "tableNumber": 3,
+      "note": "በ ታክስ",
+      "cashier": "cashier1",
+      "cashierName": "Cashier One",
+      "status": "pending",
+      "kitchenStatus": "pending",
+      "createdAt": "2026-05-06T14:24:42.129Z",
+      "completedAt": null
+    },
+    {
+      "id": "mou5i33dnwzz",
+      "items": [
+        {
+          "menuId": "m1",
+          "name": "Tibs",
+          "amharicName": "ጥብስ",
+          "price": 180,
+          "qty": 1,
+          "category": "Food"
+        }
+      ],
+      "total": 180,
+      "tableNumber": 2,
+      "note": "test",
+      "cashier": "cashier1",
+      "cashierName": "Cashier One",
+      "status": "pending",
+      "kitchenStatus": "pending",
+      "createdAt": "2026-05-06T14:26:53.353Z",
+      "completedAt": null
+    },
+    {
+      "id": "mou5i33tywb1",
+      "items": [
+        {
+          "menuId": "m1",
+          "name": "Tibs",
+          "amharicName": "ጥብስ",
+          "price": 180,
+          "qty": 1,
+          "category": "Food"
+        },
+        {
+          "menuId": "m7",
+          "name": "Soft Drink",
+          "amharicName": "ለስላሳ",
+          "price": 35,
+          "qty": 2,
+          "category": "Bar"
+        }
+      ],
+      "total": 250,
+      "tableNumber": 4,
+      "note": "extra sauce",
+      "cashier": "guest",
+      "cashierName": "Tigist",
+      "status": "completed",
+      "kitchenStatus": "pending",
+      "createdAt": "2026-05-06T14:26:53.369Z",
+      "completedAt": "2026-05-06T14:26:53.955Z",
+      "isGuest": true
+    }
+  ],
+  "inventory": [
+    {
+      "id": "i1",
+      "materialName": "Teff Flour",
+      "amharicName": "ጤፍ ዱቄት",
+      "quantity": 42.5,
+      "unit": "kg",
+      "minThreshold": 10,
+      "costPerUnit": 45,
+      "updatedAt": "2026-05-06T14:17:19.815Z"
+    },
+    {
+      "id": "i2",
+      "materialName": "Cooking Oil",
+      "amharicName": "የምግብ ዘይት",
+      "quantity": 20,
+      "unit": "liters",
+      "minThreshold": 5,
+      "costPerUnit": 120
+    },
+    {
+      "id": "i3",
+      "materialName": "Chicken",
+      "amharicName": "ዶሮ",
+      "quantity": 28,
+      "unit": "kg",
+      "minThreshold": 8,
+      "costPerUnit": 280,
+      "updatedAt": "2026-05-06T14:17:38.483Z"
+    },
+    {
+      "id": "i4",
+      "materialName": "Beef",
+      "amharicName": "የበሬ ስጋ",
+      "quantity": 25,
+      "unit": "kg",
+      "minThreshold": 8,
+      "costPerUnit": 450
+    },
+    {
+      "id": "i5",
+      "materialName": "Onion",
+      "amharicName": "ሽንኩርት",
+      "quantity": 40,
+      "unit": "kg",
+      "minThreshold": 10,
+      "costPerUnit": 25
+    },
+    {
+      "id": "i6",
+      "materialName": "Tomato",
+      "amharicName": "ቲማቲም",
+      "quantity": 35,
+      "unit": "kg",
+      "minThreshold": 10,
+      "costPerUnit": 30
+    },
+    {
+      "id": "i7",
+      "materialName": "Berbere Spice",
+      "amharicName": "በርበሬ",
+      "quantity": 15,
+      "unit": "kg",
+      "minThreshold": 3,
+      "costPerUnit": 180
+    },
+    {
+      "id": "i8",
+      "materialName": "Soft Drinks",
+      "amharicName": "ለስላሳ መጠጥ",
+      "quantity": 120,
+      "unit": "bottles",
+      "minThreshold": 24,
+      "costPerUnit": 25
+    },
+    {
+      "id": "i9",
+      "materialName": "Beer",
+      "amharicName": "ቢራ",
+      "quantity": 96,
+      "unit": "bottles",
+      "minThreshold": 24,
+      "costPerUnit": 45
+    },
+    {
+      "id": "i10",
+      "materialName": "Coffee Beans",
+      "amharicName": "ቡና",
+      "quantity": 10,
+      "unit": "kg",
+      "minThreshold": 2,
+      "costPerUnit": 350
+    },
+    {
+      "id": "mou59irity5c",
+      "materialName": "orzmery",
+      "amharicName": "ሮዝመሪ",
+      "quantity": 10,
+      "unit": "kg",
+      "minThreshold": 10,
+      "costPerUnit": 10,
+      "updatedAt": "2026-05-06T14:20:13.758Z"
+    }
+  ],
+  "menuItems": [
+    {
+      "id": "m1",
+      "name": "Tibs",
+      "amharicName": "ጥብስ",
+      "price": 180,
+      "category": "Food",
+      "description": "Sauteed meat with vegetables"
+    },
+    {
+      "id": "m2",
+      "name": "Injera with Wot",
+      "amharicName": "እንጀራ ከወጥ",
+      "price": 120,
+      "category": "Food",
+      "description": "Traditional Ethiopian bread with stew"
+    },
+    {
+      "id": "m3",
+      "name": "Kitfo",
+      "amharicName": "ክትፎ",
+      "price": 200,
+      "category": "Food",
+      "description": "Ethiopian minced raw beef"
+    },
+    {
+      "id": "m4",
+      "name": "Doro Wot",
+      "amharicName": "ዶሮ ወጥ",
+      "price": 160,
+      "category": "Food",
+      "description": "Spicy chicken stew"
+    },
+    {
+      "id": "m5",
+      "name": "Shiro",
+      "amharicName": "ሽሮ",
+      "price": 90,
+      "category": "Food",
+      "description": "Chickpea powder stew"
+    },
+    {
+      "id": "m6",
+      "name": "Firfir",
+      "amharicName": "ፍርፍር",
+      "price": 100,
+      "category": "Food",
+      "description": "Torn injera with sauce"
+    },
+    {
+      "id": "m7",
+      "name": "Soft Drink",
+      "amharicName": "ለስላሳ",
+      "price": 35,
+      "category": "Bar",
+      "description": "Pepsi, Coca-Cola, Sprite"
+    },
+    {
+      "id": "m8",
+      "name": "Beer",
+      "amharicName": "ቢራ",
+      "price": 65,
+      "category": "Bar",
+      "description": "Local or imported beer"
+    },
+    {
+      "id": "m9",
+      "name": "Ethiopian Coffee",
+      "amharicName": "የኢትዮጵያ ቡና",
+      "price": 45,
+      "category": "Bar",
+      "description": "Traditional coffee ceremony"
+    },
+    {
+      "id": "m10",
+      "name": "Juice",
+      "amharicName": "ጁስ",
+      "price": 55,
+      "category": "Bar",
+      "description": "Fresh fruit juice"
+    },
+    {
+      "id": "m11",
+      "name": "Water",
+      "amharicName": "ውሃ",
+      "price": 20,
+      "category": "Bar",
+      "description": "Bottled water"
+    },
+    {
+      "id": "m12",
+      "name": "Pasta",
+      "amharicName": "ፓስታ",
+      "price": 110,
+      "category": "Food",
+      "description": "Spaghetti with sauce"
+    }
+  ],
+  "auditLog": [
+    {
+      "id": "mou66g6aavka",
+      "user": "service1",
+      "action": "LOGIN",
+      "detail": "cashier",
+      "ts": "2026-05-06T14:45:50.050Z"
+    },
+    {
+      "id": "mou64vjmh77x",
+      "user": "admin",
+      "action": "CREATE_USER",
+      "detail": "service1(cashier)",
+      "ts": "2026-05-06T14:44:36.658Z"
+    },
+    {
+      "id": "mou62erugke8",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T14:42:41.610Z"
+    },
+    {
+      "id": "mou5z7jkxoz7",
+      "user": "chef1",
+      "action": "LOGIN",
+      "detail": "chef",
+      "ts": "2026-05-06T14:40:12.272Z"
+    },
+    {
+      "id": "mou5z3w8kk6f",
+      "user": "chef",
+      "action": "LOGIN_FAIL",
+      "detail": "user not found",
+      "ts": "2026-05-06T14:40:07.544Z"
+    },
+    {
+      "id": "mou5l0vstkf0",
+      "user": "chef",
+      "action": "LOGIN_FAIL",
+      "detail": "user not found",
+      "ts": "2026-05-06T14:29:10.456Z"
+    },
+    {
+      "id": "mou5krvns4pf",
+      "user": "chef1",
+      "action": "LOGIN_FAIL",
+      "detail": "wrong password",
+      "ts": "2026-05-06T14:28:58.787Z"
+    },
+    {
+      "id": "mou5i3kp8b8i",
+      "user": "admin",
+      "action": "ORDER_DONE",
+      "detail": "mou5i33tywb1 250ETB",
+      "ts": "2026-05-06T14:26:53.977Z"
+    },
+    {
+      "id": "mou5i3ij4zti",
+      "user": "chef1",
+      "action": "KITCHEN_READY",
+      "detail": "mou4iqh5mzrm",
+      "ts": "2026-05-06T14:26:53.899Z"
+    },
+    {
+      "id": "mou5i3gn0p3j",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T14:26:53.831Z"
+    },
+    {
+      "id": "mou5i3gihxe1",
+      "user": "chef1",
+      "action": "LOGIN",
+      "detail": "chef",
+      "ts": "2026-05-06T14:26:53.826Z"
+    },
+    {
+      "id": "mou5i33v3ph8",
+      "user": "guest",
+      "action": "GUEST_ORDER",
+      "detail": "mou5i33tywb1 250ETB table=4",
+      "ts": "2026-05-06T14:26:53.371Z"
+    },
+    {
+      "id": "mou5i33f4kf5",
+      "user": "cashier1",
+      "action": "NEW_ORDER",
+      "detail": "mou5i33dnwzz 180ETB",
+      "ts": "2026-05-06T14:26:53.355Z"
+    },
+    {
+      "id": "mou5i328wzq4",
+      "user": "cashier1",
+      "action": "LOGIN",
+      "detail": "cashier",
+      "ts": "2026-05-06T14:26:53.312Z"
+    },
+    {
+      "id": "mou5ht72xc74",
+      "user": "chef1",
+      "action": "LOGIN_FAIL",
+      "detail": "wrong password",
+      "ts": "2026-05-06T14:26:40.526Z"
+    },
+    {
+      "id": "mou5f9uc0h2r",
+      "user": "cashier1",
+      "action": "NEW_ORDER",
+      "detail": "mou5f9u9j8vb 225ETB",
+      "ts": "2026-05-06T14:24:42.132Z"
+    },
+    {
+      "id": "mou5d9ayjqyg",
+      "user": "cashier1",
+      "action": "LOGIN",
+      "detail": "cashier",
+      "ts": "2026-05-06T14:23:08.122Z"
+    },
+    {
+      "id": "mou5cbmizv3o",
+      "user": "kitchen1",
+      "action": "LOGIN",
+      "detail": "kitchen",
+      "ts": "2026-05-06T14:22:24.474Z"
+    },
+    {
+      "id": "mou59irk9jmo",
+      "user": "admin",
+      "action": "ADD_INV",
+      "detail": "orzmery",
+      "ts": "2026-05-06T14:20:13.760Z"
+    },
+    {
+      "id": "mou56ygdbox4",
+      "user": "admin",
+      "action": "KITCHEN_READY",
+      "detail": "mou4v44m5xir",
+      "ts": "2026-05-06T14:18:14.125Z"
+    },
+    {
+      "id": "mou56wix1mou",
+      "user": "admin",
+      "action": "KITCHEN_READY",
+      "detail": "mou4iqhqy8ig",
+      "ts": "2026-05-06T14:18:11.625Z"
+    },
+    {
+      "id": "mou56txkv8l3",
+      "user": "admin",
+      "action": "KITCHEN_READY",
+      "detail": "mou4v46lyd2c",
+      "ts": "2026-05-06T14:18:08.264Z"
+    },
+    {
+      "id": "mou56fp0uu4y",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T14:17:49.812Z"
+    },
+    {
+      "id": "mou5678ab35j",
+      "user": "chef1",
+      "action": "REMOVE_INV",
+      "detail": "2 kg Chicken",
+      "ts": "2026-05-06T14:17:38.842Z"
+    },
+    {
+      "id": "mou55sjwmkih",
+      "user": "chef1",
+      "action": "REMOVE_INV",
+      "detail": "4 kg Teff Flour",
+      "ts": "2026-05-06T14:17:19.820Z"
+    },
+    {
+      "id": "mou55dvelvyr",
+      "user": "chef1",
+      "action": "REMOVE_INV",
+      "detail": "3 kg Teff Flour",
+      "ts": "2026-05-06T14:17:00.794Z"
+    },
+    {
+      "id": "mou545evuuan",
+      "user": "chef1",
+      "action": "LOGIN",
+      "detail": "chef",
+      "ts": "2026-05-06T14:16:03.175Z"
+    },
+    {
+      "id": "mou53ji1ksj0",
+      "user": "chef1",
+      "action": "LOGIN_FAIL",
+      "detail": "wrong password",
+      "ts": "2026-05-06T14:15:34.777Z"
+    },
+    {
+      "id": "mou53cs1uv1w",
+      "user": "chef1",
+      "action": "LOGIN_FAIL",
+      "detail": "wrong password",
+      "ts": "2026-05-06T14:15:26.065Z"
+    },
+    {
+      "id": "mou53auq4oen",
+      "user": "chef1",
+      "action": "LOGIN_FAIL",
+      "detail": "wrong password",
+      "ts": "2026-05-06T14:15:23.570Z"
+    },
+    {
+      "id": "mou4v5dzmf49",
+      "user": "admin",
+      "action": "ORDER_DONE",
+      "detail": "mou4v46lyd2c 250ETB",
+      "ts": "2026-05-06T14:09:03.240Z"
+    },
+    {
+      "id": "mou4v5dizrl3",
+      "user": "chef1",
+      "action": "KITCHEN_READY",
+      "detail": "mou4iqh5mzrm",
+      "ts": "2026-05-06T14:09:03.222Z"
+    },
+    {
+      "id": "mou4v5by5h26",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T14:09:03.166Z"
+    },
+    {
+      "id": "mou4v5bq3a7x",
+      "user": "chef1",
+      "action": "LOGIN",
+      "detail": "chef",
+      "ts": "2026-05-06T14:09:03.158Z"
+    },
+    {
+      "id": "mou4v46npx9u",
+      "user": "guest",
+      "action": "GUEST_ORDER",
+      "detail": "mou4v46lyd2c 250ETB table=4",
+      "ts": "2026-05-06T14:09:01.679Z"
+    },
+    {
+      "id": "mou4v44otc0u",
+      "user": "cashier1",
+      "action": "NEW_ORDER",
+      "detail": "mou4v44m5xir 180ETB",
+      "ts": "2026-05-06T14:09:01.608Z"
+    },
+    {
+      "id": "mou4v42s190l",
+      "user": "cashier1",
+      "action": "LOGIN",
+      "detail": "cashier",
+      "ts": "2026-05-06T14:09:01.540Z"
+    },
+    {
+      "id": "mou4qdoog02u",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T14:05:20.712Z"
+    },
+    {
+      "id": "mou4n20yeezy",
+      "user": "kitchen1",
+      "action": "LOGIN",
+      "detail": "kitchen",
+      "ts": "2026-05-06T14:02:45.634Z"
+    },
+    {
+      "id": "mou4mu79y4sh",
+      "user": "kitchen",
+      "action": "LOGIN_FAIL",
+      "detail": "user not found",
+      "ts": "2026-05-06T14:02:35.493Z"
+    },
+    {
+      "id": "mou4mrucur8b",
+      "user": "kitchen",
+      "action": "LOGIN_FAIL",
+      "detail": "user not found",
+      "ts": "2026-05-06T14:02:32.436Z"
+    },
+    {
+      "id": "mou4m00lawdq",
+      "user": "cashier1",
+      "action": "LOGIN",
+      "detail": "cashier",
+      "ts": "2026-05-06T14:01:56.373Z"
+    },
+    {
+      "id": "mou4lf6gbj6n",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T14:01:29.368Z"
+    },
+    {
+      "id": "mou4j60ig376",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T13:59:44.178Z"
+    },
+    {
+      "id": "mou4iqoqstfs",
+      "user": "chef1",
+      "action": "REMOVE_INV",
+      "detail": "0.5 kg Teff Flour",
+      "ts": "2026-05-06T13:59:24.314Z"
+    },
+    {
+      "id": "mou4iqn6qju4",
+      "user": "admin",
+      "action": "ORDER_DONE",
+      "detail": "mou4iqh5mzrm 395ETB",
+      "ts": "2026-05-06T13:59:24.259Z"
+    },
+    {
+      "id": "mou4iqmrluwj",
+      "user": "admin",
+      "action": "EXPORT_EXCEL",
+      "detail": "",
+      "ts": "2026-05-06T13:59:24.243Z"
+    },
+    {
+      "id": "mou4iqjiwhzz",
+      "user": "admin",
+      "action": "EXPORT_CSV",
+      "detail": "",
+      "ts": "2026-05-06T13:59:24.126Z"
+    },
+    {
+      "id": "mou4iqih71sa",
+      "user": "chef1",
+      "action": "KITCHEN_READY",
+      "detail": "mou4iqh5mzrm",
+      "ts": "2026-05-06T13:59:24.089Z"
+    },
+    {
+      "id": "mou4iqhrwmx5",
+      "user": "guest",
+      "action": "GUEST_ORDER",
+      "detail": "mou4iqhqy8ig 120ETB table=5",
+      "ts": "2026-05-06T13:59:24.063Z"
+    },
+    {
+      "id": "mou4iqh7h3xg",
+      "user": "cashier1",
+      "action": "NEW_ORDER",
+      "detail": "mou4iqh5mzrm 395ETB",
+      "ts": "2026-05-06T13:59:24.043Z"
+    },
+    {
+      "id": "mou4iqg1xvhj",
+      "user": "admin",
+      "action": "LOGIN_FAIL",
+      "detail": "wrong password",
+      "ts": "2026-05-06T13:59:24.001Z"
+    },
+    {
+      "id": "mou4iq6pd8l8",
+      "user": "chef1",
+      "action": "LOGIN",
+      "detail": "chef",
+      "ts": "2026-05-06T13:59:23.665Z"
+    },
+    {
+      "id": "mou4iq0nw35r",
+      "user": "kitchen1",
+      "action": "LOGIN",
+      "detail": "kitchen",
+      "ts": "2026-05-06T13:59:23.447Z"
+    },
+    {
+      "id": "mou4ipo7po6n",
+      "user": "cashier1",
+      "action": "LOGIN",
+      "detail": "cashier",
+      "ts": "2026-05-06T13:59:22.999Z"
+    },
+    {
+      "id": "mou4ipf79q5m",
+      "user": "admin",
+      "action": "LOGIN",
+      "detail": "admin",
+      "ts": "2026-05-06T13:59:22.675Z"
+    },
+    {
+      "id": "mou4h5syd2q5",
+      "user": "cashier1",
+      "action": "LOGIN",
+      "detail": "cashier",
+      "ts": "2026-05-06T13:58:10.594Z"
+    },
+    {
+      "id": "mou4ggp5p2uo",
+      "user": "admin",
+      "action": "LOGIN_FAIL",
+      "detail": "wrong password",
+      "ts": "2026-05-06T13:57:38.057Z"
+    }
+  ]
+}

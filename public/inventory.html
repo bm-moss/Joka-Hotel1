@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Joka · Inventory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar" id="topbar"></div>
+    <div class="page-content">
+
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+        <div class="stat-card">      <div class="label" data-i18n="inventory">ዕቃዎች</div><div class="value" id="cAll">—</div></div>
+        <div class="stat-card red">  <div class="label" data-i18n="lowStock">ዝቅተኛ</div><div class="value" id="cLow">—</div></div>
+        <div class="stat-card green"><div class="label" data-i18n="stockOk">ክምችት አለ</div><div class="value" id="cOk">—</div></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="openModal('addModal')" data-i18n="addItem">ዕቃ ጨምር</button>
+        <button class="btn btn-ghost"   onclick="openModal('rmvModal')" data-i18n="removeItem">ዕቃ አስወግድ</button>
+        <input class="form-control" id="invSrch" type="text" placeholder="Search…"
+               style="max-width:220px;margin-left:auto" oninput="render()">
+      </div>
+
+      <div class="inv-grid" id="invCards"></div>
+
+      <div class="card">
+        <h3 data-i18n="inventory">የክምችት ዝርዝር</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th data-i18n="name">ስም</th><th data-i18n="qty">ብዛት</th>
+              <th data-i18n="unit">ክፍል</th><th data-i18n="minStock">ዝቅተኛ</th>
+              <th data-i18n="costPerUnit">ዋጋ/ክፍል</th><th data-i18n="status">ሁኔታ</th><th></th>
+            </tr></thead>
+            <tbody id="invTbl"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- add modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header"><h3 data-i18n="addItem">ዕቃ ጨምር</h3><button class="modal-close" onclick="closeModal('addModal')">✕</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Name (EN)</label><input class="form-control" id="aN" placeholder="Material name"></div>
+      <div class="form-group"><label>ስም (አማ)</label><input class="form-control" id="aA" placeholder="የዕቃ ስም"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label data-i18n="qty">ብዛት</label><input class="form-control" id="aQ" type="number" min="0" step=".01" placeholder="0"></div>
+      <div class="form-group"><label data-i18n="unit">ክፍል</label>
+        <select class="form-control" id="aU"><option>kg</option><option>liters</option><option>bottles</option><option>pieces</option><option>bags</option><option>boxes</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label data-i18n="minStock">ዝቅተኛ</label><input class="form-control" id="aM" type="number" min="0" step=".01" placeholder="0"></div>
+      <div class="form-group"><label data-i18n="costPerUnit">ዋጋ/ክፍል</label><input class="form-control" id="aC" type="number" min="0" step=".01" placeholder="0"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('addModal')" data-i18n="cancel">ሰርዝ</button>
+      <button class="btn btn-primary btn-full" onclick="addItem()" data-i18n="save">አስቀምጥ</button>
+    </div>
+  </div>
+</div>
+
+<!-- remove modal -->
+<div class="modal-overlay" id="rmvModal">
+  <div class="modal">
+    <div class="modal-header"><h3 data-i18n="removeItem">ዕቃ አስወግድ</h3><button class="modal-close" onclick="closeModal('rmvModal')">✕</button></div>
+    <div class="form-group"><label>ዕቃ ምረጥ</label><select class="form-control" id="rmvSel"></select></div>
+    <div class="form-group"><label data-i18n="amount">መጠን</label><input class="form-control" id="rmvAmt" type="number" min=".01" step=".01" placeholder="0"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-ghost btn-full" onclick="closeModal('rmvModal')" data-i18n="cancel">ሰርዝ</button>
+      <button class="btn btn-danger btn-full" onclick="removeItem()" data-i18n="confirm">አረጋግጥ</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+Auth.require(['admin','cashier','kitchen']);
+buildSidebar('inventory');
+buildTopbar('inventory');
+
+let inv = [];
+const isAdmin = () => Auth.user()?.role === 'admin';
+
+async function load() {
+  const res = await api('GET','/api/inventory');
+  if (!res) return;
+  inv = await res.json();
+  render();
+  document.getElementById('rmvSel').innerHTML = inv.map(i=>`<option value="${i.id}">${i.materialName} (${i.quantity} ${i.unit})</option>`).join('');
+}
+
+function render() {
+  const q = document.getElementById('invSrch').value.toLowerCase();
+  const list = inv.filter(i => !q || i.materialName.toLowerCase().includes(q) || (i.amharicName||'').includes(q));
+  const low  = list.filter(i => i.quantity <= i.minThreshold);
+  document.getElementById('cAll').textContent = list.length;
+  document.getElementById('cLow').textContent = low.length;
+  document.getElementById('cOk').textContent  = list.length - low.length;
+
+  document.getElementById('invCards').innerHTML = list.map(i => {
+    const isLow = i.quantity <= i.minThreshold;
+    return `<div class="inv-card ${isLow?'low':''}">
+      <div class="inv-name">${currentLang==='am'&&i.amharicName?i.amharicName:i.materialName}</div>
+      <div class="inv-qty">${i.quantity}</div>
+      <div class="inv-unit">${i.unit}</div>
+      <div class="inv-status">${isLow?'<span class="badge badge-red">LOW</span>':'<span class="badge badge-green">OK</span>'}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('invTbl').innerHTML = list.map(i => {
+    const isLow = i.quantity <= i.minThreshold;
+    return `<tr>
+      <td><strong>${i.materialName}</strong>${i.amharicName?`<br><small style="color:var(--text-muted)">${i.amharicName}</small>`:''}</td>
+      <td style="font-weight:600;${isLow?'color:var(--danger)':''}">${i.quantity}</td>
+      <td>${i.unit}</td><td>${i.minThreshold}</td>
+      <td>${i.costPerUnit} ETB</td>
+      <td>${isLow?'<span class="badge badge-red">LOW</span>':'<span class="badge badge-green">OK</span>'}</td>
+      <td>${isAdmin()?`<button class="btn btn-danger btn-sm" onclick="delItem('${i.id}')">🗑</button>`:''}
+      </td></tr>`;
+  }).join('');
+}
+
+async function addItem() {
+  const body = { materialName:document.getElementById('aN').value.trim(), amharicName:document.getElementById('aA').value.trim(),
+    quantity:+document.getElementById('aQ').value, unit:document.getElementById('aU').value,
+    minThreshold:+document.getElementById('aM').value, costPerUnit:+document.getElementById('aC').value };
+  if (!body.materialName || isNaN(body.quantity)) { toast('Fill required fields','error'); return; }
+  const res = await api('POST','/api/inventory',body);
+  if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast(t('inventoryUpdated'),'success'); closeModal('addModal'); load(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+async function removeItem() {
+  const id  = document.getElementById('rmvSel').value;
+  const amt = +document.getElementById('rmvAmt').value;
+  if (!id || !amt || amt<=0) { toast('Enter valid amount','error'); return; }
+  const res = await api('POST','/api/inventory/remove',{ id, amount:amt });
+  if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast(t('inventoryUpdated'),'success'); closeModal('rmvModal'); load(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+async function delItem(id) {
+  if (!confirm(t('confirmDelete'))) return;
+  const res = await api('DELETE',`/api/inventory/${id}`);
+  if (!res) return;
+  const d = await res.json();
+  if (d.ok) { toast('Deleted','success'); load(); }
+  else toast(d.msg||t('error'),'error');
+}
+
+load();
+</script>
+</body>
+</html>

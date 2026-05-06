@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joka Hotel · Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+
+<div class="login-container">
+  <!-- brand -->
+  <div class="login-brand">
+    <div>
+      <div class="logo">J</div>
+      <h1>Joka Hotel</h1>
+      <p>Advanced Management System</p>
+      <div class="features">
+        <div class="feature"><span>✓</span><span>Point of Sale</span></div>
+        <div class="feature"><span>✓</span><span>Kitchen Display</span></div>
+        <div class="feature"><span>✓</span><span>Inventory Control</span></div>
+        <div class="feature"><span>✓</span><span>Revenue Analytics</span></div>
+        <div class="feature"><span>✓</span><span>Amharic / English</span></div>
+      </div>
+    </div>
+    <footer>© 2026 Joka Hospitality Group</footer>
+  </div>
+
+  <!-- form -->
+  <div class="login-form-wrap">
+    <div class="login-form-inner">
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+        <div class="lang-toggle">
+          <button class="lang-btn active" data-lang="am" onclick="switchLang('am')">አማ</button>
+          <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+        </div>
+      </div>
+
+      <h2 data-i18n="signIn">ግባ</h2>
+      <p class="subtitle" data-i18n="welcome">እንኳን ደህና መጡ</p>
+
+      <!-- role tabs -->
+      <div class="role-selector" id="roleSel">
+        <button class="role-btn active" data-role="admin"   onclick="pickRole('admin')">⚙️ Admin</button>
+        <button class="role-btn"        data-role="cashier" onclick="pickRole('cashier')">🛒 Cashier</button>
+        <button class="role-btn"        data-role="kitchen" onclick="pickRole('kitchen')">🍳 Kitchen</button>
+        <button class="role-btn"        data-role="chef"    onclick="pickRole('chef')">👨‍🍳 Chef</button>
+        <button class="role-btn"        data-role="guest"   onclick="pickRole('guest')">👤 Guest</button>
+      </div>
+
+      <form id="loginForm" onsubmit="doLogin(event)" autocomplete="off">
+        <div class="form-group" id="uRow">
+          <label data-i18n="username">የተጠቃሚ ስም</label>
+          <input class="form-control" id="uname" type="text" autocomplete="username" required>
+        </div>
+        <div class="form-group" id="pRow">
+          <label data-i18n="password">የይለፍ ቃል</label>
+          <div style="position:relative">
+            <input class="form-control" id="pwd" type="password" autocomplete="current-password" required>
+            <button type="button" onclick="togglePwd()"
+              style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted)">👁</button>
+          </div>
+        </div>
+        <button class="login-btn" id="loginBtn" type="submit" data-i18n="signIn">ግባ</button>
+      </form>
+
+      <p id="errMsg" class="error-msg"></p>
+
+      <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);font-size:0.78rem;color:var(--text-dim);">
+        <strong style="color:var(--text-muted)">Default logins:</strong><br>
+        admin / admin2026 &nbsp;·&nbsp; cashier1 / password &nbsp;·&nbsp; kitchen1 / password &nbsp;·&nbsp; chef1 / chef2026
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // already logged in → redirect
+  (function() {
+    const u = Auth.user();
+    if (u && Auth.token()) location.href = roleHome(u.role);
+  })();
+
+  let chosenRole = 'admin';
+
+  function pickRole(r) {
+    chosenRole = r;
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('active', b.dataset.role === r));
+    const hide = r === 'guest';
+    document.getElementById('uRow').style.display = hide ? 'none' : '';
+    document.getElementById('pRow').style.display = hide ? 'none' : '';
+    document.getElementById('uname').required = !hide;
+    document.getElementById('pwd').required   = !hide;
+  }
+
+  function switchLang(l) {
+    setLang(l);
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  }
+
+  function togglePwd() {
+    const p = document.getElementById('pwd');
+    p.type = p.type === 'password' ? 'text' : 'password';
+  }
+
+  async function doLogin(e) {
+    e.preventDefault();
+    if (chosenRole === 'guest') { location.href = 'guest.html'; return; }
+
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('errMsg');
+    btn.disabled = true;
+    btn.textContent = '…';
+    err.textContent = '';
+
+    try {
+      const res  = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: document.getElementById('uname').value.trim(), password: document.getElementById('pwd').value })
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        Auth.save(data.token, { username: data.username, role: data.role, name: data.name });
+        location.href = roleHome(data.role);
+      } else {
+        err.textContent = data.msg || t('loginFailed');
+        btn.disabled = false;
+        btn.textContent = t('signIn');
+      }
+    } catch (ex) {
+      err.textContent = 'Server unreachable';
+      btn.disabled = false;
+      btn.textContent = t('signIn');
+    }
+  }
+</script>
+</body>
+</html>

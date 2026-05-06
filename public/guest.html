@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Joka Hotel · Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="guest-page">
+
+  <div class="guest-header">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:44px;height:44px;background:var(--accent);border-radius:12px;display:grid;place-items:center;font-size:1.4rem;font-weight:800">J</div>
+      <div>
+        <div style="font-size:1.2rem;font-weight:800">Joka Hotel</div>
+        <div style="font-size:.78rem;color:var(--text-muted)" data-i18n="ourMenu">ምናሌያችን</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="am" onclick="switchLang('am')">አማ</button>
+        <button class="lang-btn"        data-lang="en" onclick="switchLang('en')">EN</button>
+      </div>
+      <a href="index.html" class="btn btn-ghost btn-sm">🔐 Staff Login</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:40px 32px 20px;background:linear-gradient(180deg,rgba(30,58,95,.3) 0%,transparent 100%)">
+    <h1 style="font-size:2rem;font-weight:800;margin-bottom:6px" data-i18n="ourMenu">ምናሌያችን</h1>
+    <p style="color:var(--text-muted)">Joka Hotel · Addis Ababa</p>
+  </div>
+
+  <div class="cat-filter" style="justify-content:center;margin-bottom:20px">
+    <button class="cat-btn active" data-cat="all"  onclick="filterCat('all')"  data-i18n="allCategories">ሁሉም</button>
+    <button class="cat-btn"        data-cat="Food" onclick="filterCat('Food')" data-i18n="food">ምግብ 🍽</button>
+    <button class="cat-btn"        data-cat="Bar"  onclick="filterCat('Bar')"  data-i18n="bar">መጠጥ 🍺</button>
+  </div>
+
+  <div class="guest-menu-grid" id="gGrid">
+    <p style="color:var(--text-dim)" data-i18n="loading">በመጫን ላይ…</p>
+  </div>
+
+  <div style="text-align:center;padding:28px;color:var(--text-dim);font-size:.8rem;border-top:1px solid var(--border);margin-top:20px">
+    © 2026 Joka Hospitality Group · All prices in ETB
+  </div>
+
+<script src="app.js"></script>
+<script>
+const EMOJI = { Tibs:'🥩','Injera with Wot':'🫓',Kitfo:'🥩','Doro Wot':'🍗',Shiro:'🫕',Firfir:'🫓','Soft Drink':'🥤',Beer:'🍺','Ethiopian Coffee':'☕',Juice:'🧃',Water:'💧',Pasta:'🍝' };
+let all = [], cat = 'all';
+
+async function load() {
+  const res = await fetch('/api/menu');
+  all = await res.json();
+  render();
+}
+
+function filterCat(c) {
+  cat = c;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat===c));
+  render();
+}
+
+function render() {
+  const list = cat==='all' ? all : all.filter(i=>i.category===cat);
+  const g = document.getElementById('gGrid');
+  if (!list.length) { g.innerHTML=`<p style="color:var(--text-dim);text-align:center;padding:40px">${t('noData')}</p>`; return; }
+  g.innerHTML = list.map(i=>`
+    <div class="guest-card">
+      <div class="emoji">${EMOJI[i.name]||(i.category==='Food'?'🍽':'🍺')}</div>
+      <div class="gname">${currentLang==='en'?i.name:(i.amharicName||i.name)}</div>
+      <div class="gamharic">${currentLang==='en'?(i.amharicName||''):i.name}</div>
+      <div class="gprice">${i.price} ETB</div>
+      <div class="gdesc">${i.description||''}</div>
+      <div style="margin-top:8px"><span class="badge ${i.category==='Food'?'badge-yellow':'badge-blue'}">${i.category}</span></div>
+    </div>`).join('');
+}
+
+function switchLang(l) {
+  setLang(l);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
+  render();
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Joka · POS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar" id="topbar"></div>
+    <div class="page-content" style="padding-bottom:0">
+
+      <!-- filters -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+        <button class="cat-btn active" data-cat="all"  onclick="filterCat('all')"  data-i18n="allCategories">ሁሉም</button>
+        <button class="cat-btn"        data-cat="Food" onclick="filterCat('Food')" data-i18n="food">ምግብ</button>
+        <button class="cat-btn"        data-cat="Bar"  onclick="filterCat('Bar')"  data-i18n="bar">መጠጥ</button>
+        <input class="form-control" id="srch" type="text" placeholder="Search…"
+               style="max-width:200px;margin-left:auto" oninput="renderMenu()">
+      </div>
+
+      <div class="pos-layout">
+        <!-- menu -->
+        <div><div class="menu-grid" id="menuGrid"><p style="color:var(--text-dim)" data-i18n="loading">በመጫን ላይ…</p></div></div>
+
+        <!-- cart -->
+        <div class="cart-panel">
+          <div class="cart-header">🛒 <span data-i18n="newOrder">አዲስ ትዕዛዝ</span></div>
+          <div class="cart-items" id="cartItems">
+            <div style="text-align:center;padding:40px;color:var(--text-dim)">
+              <div style="font-size:2.5rem">🛒</div>
+              <small data-i18n="noData">ምንም ዕቃ የለም</small>
+            </div>
+          </div>
+          <div class="cart-footer">
+            <div class="form-group">
+              <label data-i18n="tableNumber">ጠረጴዛ ቁጥር</label>
+              <input class="form-control" id="tblNum" type="number" min="1" max="100" placeholder="1–100">
+            </div>
+            <div class="form-group">
+              <label data-i18n="orderNote">ማስታወሻ</label>
+              <input class="form-control" id="oNote" maxlength="200" placeholder="…">
+            </div>
+            <div class="cart-total">
+              <span data-i18n="orderTotal">ጠቅላላ ዋጋ</span>
+              <span id="cartTotal" style="color:var(--accent2)">0 ETB</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="clearCart()" data-i18n="clearCart">ጋሪ አጽዳ</button>
+              <button class="btn btn-primary btn-full" id="orderBtn" onclick="placeOrder()" data-i18n="placeOrder">ትዕዛዝ ላክ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- receipt modal -->
+<div class="modal-overlay" id="receiptModal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-header">
+      <h3>🧾 Receipt</h3>
+      <button class="modal-close" onclick="closeModal('receiptModal')">✕</button>
+    </div>
+    <div id="receiptBody" style="font-family:monospace;font-size:.82rem;white-space:pre-wrap"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-ghost btn-full" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-primary btn-full" onclick="closeModal('receiptModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+Auth.require(['cashier','admin']);
+buildSidebar('pos');
+buildTopbar('pos');
+
+const EMOJI = { Tibs:'🥩','Injera with Wot':'🫓',Kitfo:'🥩','Doro Wot':'🍗',Shiro:'🫕',Firfir:'🫓','Soft Drink':'🥤',Beer:'🍺','Ethiopian Coffee':'☕',Juice:'🧃',Water:'💧',Pasta:'🍝' };
+
+let allMenu = [], cart = [], activeCat = 'all';
+
+async function loadMenu() {
+  const res = await fetch('/api/menu');
+  allMenu = await res.json();
+  renderMenu();
+}
+
+function filterCat(c) {
+  activeCat = c;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === c));
+  renderMenu();
+}
+
+function renderMenu() {
+  const q = document.getElementById('srch').value.toLowerCase();
+  const items = allMenu.filter(m =>
+    (activeCat === 'all' || m.category === activeCat) &&
+    (!q || m.name.toLowerCase().includes(q) || (m.amharicName||'').includes(q))
+  );
+  const g = document.getElementById('menuGrid');
+  if (!items.length) { g.innerHTML = `<p style="color:var(--text-dim)">${t('noData')}</p>`; return; }
+  g.innerHTML = items.map(m => `
+    <div class="menu-item-card" onclick="addToCart('${m.id}')">
+      <div class="emoji">${EMOJI[m.name]||(m.category==='Food'?'🍽':'🍺')}</div>
+      <div class="item-name">${currentLang==='am'&&m.amharicName ? m.amharicName : m.name}</div>
+      <div class="item-price">${m.price} ETB</div>
+      <div class="item-cat">${m.category}</div>
+    </div>`).join('');
+}
+
+function addToCart(id) {
+  const m = allMenu.find(x => x.id === id); if (!m) return;
+  const ex = cart.find(c => c.menuId === id);
+  if (ex) ex.qty++; else cart.push({ menuId:id, name:m.name, amharicName:m.amharicName||'', price:m.price, qty:1 });
+  renderCart();
+  toast(t('itemAdded'), 'success');
+}
+
+function changeQty(id, d) {
+  const i = cart.findIndex(c => c.menuId === id); if (i<0) return;
+  cart[i].qty += d;
+  if (cart[i].qty <= 0) cart.splice(i,1);
+  renderCart();
+}
+
+function clearCart() { cart = []; renderCart(); }
+
+function renderCart() {
+  const el = document.getElementById('cartItems');
+  if (!cart.length) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-dim)"><div style="font-size:2.5rem">🛒</div><small>${t('noData')}</small></div>`;
+    document.getElementById('cartTotal').textContent = '0 ETB';
+    return;
+  }
+  el.innerHTML = cart.map(c => `
+    <div class="cart-item">
+      <div class="ci-name">${currentLang==='am'&&c.amharicName ? c.amharicName : c.name}</div>
+      <div class="ci-qty">
+        <button onclick="changeQty('${c.menuId}',-1)">−</button>
+        <span>${c.qty}</span>
+        <button onclick="changeQty('${c.menuId}',1)">+</button>
+      </div>
+      <div class="ci-price">${(c.price*c.qty).toLocaleString()} ETB</div>
+    </div>`).join('');
+  const total = cart.reduce((s,c) => s+c.price*c.qty, 0);
+  document.getElementById('cartTotal').textContent = total.toLocaleString() + ' ETB';
+}
+
+async function placeOrder() {
+  if (!cart.length) { toast('Cart is empty','error'); return; }
+  const btn = document.getElementById('orderBtn');
+  btn.disabled = true; btn.textContent = '…';
+
+  const res = await api('POST', '/api/orders', {
+    items: cart.map(c => ({ menuId:c.menuId, qty:c.qty })),
+    tableNumber: document.getElementById('tblNum').value ? +document.getElementById('tblNum').value : null,
+    note: document.getElementById('oNote').value.trim()
+  });
+
+  btn.disabled = false; btn.textContent = t('placeOrder');
+  if (!res) return;
+
+  const data = await res.json();
+  if (data.ok) {
+    showReceipt(data.order);
+    clearCart();
+    document.getElementById('tblNum').value = '';
+    document.getElementById('oNote').value  = '';
+    toast(t('orderSuccess'), 'success');
+  } else {
+    toast(data.msg || t('error'), 'error');
+  }
+}
+
+function showReceipt(order) {
+  const u = Auth.user();
+  const lines = order.items.map(i => `${i.name.padEnd(18)} x${i.qty}  ${(i.price*i.qty).toLocaleString()} ETB`).join('\n');
+  document.getElementById('receiptBody').textContent =
+`════════════════════
+    JOKA HOTEL
+${new Date().toLocaleString()}
+════════════════════
+${order.tableNumber ? 'Table: '+order.tableNumber+'\n' : ''}Cashier: ${u?.name||u?.username}
+────────────────────
+${lines}
+────────────────────
+TOTAL  ${order.total.toLocaleString()} ETB
+════════════════════
+  Thank you! / አመሰግናለሁ!`;
+  openModal('receiptModal');
+}
+
+loadMenu();
+</script>
+</body>
+</html>

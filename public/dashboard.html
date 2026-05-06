@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Joka · Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar" id="topbar"></div>
+    <div class="page-content">
+
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">        <div class="label" data-i18n="weekly">ሳምንታዊ</div>  <div class="value" id="sWeekly">—</div><div class="sub">ETB</div></div>
+        <div class="stat-card green">  <div class="label" data-i18n="monthly">ወርሃዊ</div>  <div class="value" id="sMonthly">—</div><div class="sub">ETB</div></div>
+        <div class="stat-card yellow"> <div class="label" data-i18n="yearly">ዓመታዊ</div>  <div class="value" id="sYearly">—</div><div class="sub">ETB</div></div>
+        <div class="stat-card">        <div class="label" data-i18n="totalRevenue">ጠቅላላ ገቢ</div><div class="value" id="sTotal">—</div><div class="sub">ETB</div></div>
+        <div class="stat-card green">  <div class="label" data-i18n="orders">ትዕዛዞች</div> <div class="value" id="sCount">—</div><div class="sub" data-i18n="completed">ተጠናቋል</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:24px">
+        <div class="card">
+          <h3 data-i18n="revenueChart">የገቢ ቻርት</h3>
+          <div class="chart-container"><canvas id="lineChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h3 data-i18n="category">ምድብ</h3>
+          <div class="chart-container"><canvas id="pieChart"></canvas></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <h3 data-i18n="cashierPerformance">የካሸር አፈጻጸም</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th data-i18n="name">ስም</th><th data-i18n="orders">ትዕዛዞች</th><th data-i18n="total">ጠቅላላ</th></tr></thead>
+              <tbody id="cashierTbl"><tr><td colspan="3" style="text-align:center;color:var(--text-dim)" data-i18n="loading">…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h3 data-i18n="auditLog">ኦዲት</h3>
+          <div id="auditList" style="max-height:260px;overflow-y:auto;font-size:.8rem"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+Auth.require(['admin']);
+buildSidebar('dashboard');
+buildTopbar('dashboard');
+
+let lineInst, pieInst;
+
+async function loadRevenue() {
+  const res = await api('GET','/api/reports/revenue');
+  if (!res) return;
+  const d = await res.json();
+  document.getElementById('sWeekly').textContent  = d.weekly.toLocaleString();
+  document.getElementById('sMonthly').textContent = d.monthly.toLocaleString();
+  document.getElementById('sYearly').textContent  = d.yearly.toLocaleString();
+  document.getElementById('sTotal').textContent   = d.total.toLocaleString();
+  document.getElementById('sCount').textContent   = d.orderCount;
+
+  const labels = Object.keys(d.daily).sort();
+  const values = labels.map(l => d.daily[l]);
+  const ctx1 = document.getElementById('lineChart').getContext('2d');
+  if (lineInst) lineInst.destroy();
+  lineInst = new Chart(ctx1, {
+    type:'line',
+    data:{ labels, datasets:[{ label:'ETB', data:values, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.1)', fill:true, tension:.4, pointRadius:3 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ticks:{color:'#94a3b8',maxTicksLimit:7},grid:{color:'#1e293b'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'#334155'}} } }
+  });
+
+  const ctx2 = document.getElementById('pieChart').getContext('2d');
+  if (pieInst) pieInst.destroy();
+  pieInst = new Chart(ctx2, {
+    type:'doughnut',
+    data:{ labels:['Food','Bar'], datasets:[{ data:[d.foodRevenue,d.barRevenue], backgroundColor:['#3b82f6','#10b981'], borderWidth:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#94a3b8'}}} }
+  });
+}
+
+async function loadCashiers() {
+  const res = await api('GET','/api/reports/cashiers');
+  if (!res) return;
+  const data = await res.json();
+  const tb = document.getElementById('cashierTbl');
+  tb.innerHTML = data.length
+    ? data.map(c=>`<tr><td>${c.name}</td><td><span class="badge badge-blue">${c.count}</span></td><td style="color:var(--accent2);font-weight:600">${c.total.toLocaleString()} ETB</td></tr>`).join('')
+    : `<tr><td colspan="3" style="text-align:center;color:var(--text-dim)">${t('noData')}</td></tr>`;
+}
+
+async function loadAudit() {
+  const res = await api('GET','/api/audit');
+  if (!res) return;
+  const data = await res.json();
+  const el = document.getElementById('auditList');
+  el.innerHTML = data.length
+    ? data.slice(0,20).map(a=>`
+        <div style="padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px">
+          <span style="color:var(--accent);min-width:70px">${a.user}</span>
+          <span style="flex:1;color:var(--text-muted)">${a.action}</span>
+          <span style="color:var(--text-dim);font-size:.72rem">${new Date(a.ts).toLocaleTimeString()}</span>
+        </div>`).join('')
+    : `<p style="color:var(--text-dim);padding:8px">${t('noData')}</p>`;
+}
+
+loadRevenue(); loadCashiers(); loadAudit();
+setInterval(loadRevenue, 60000);
+</script>
+</body>
+</html>
